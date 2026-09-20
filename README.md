@@ -218,6 +218,62 @@ Vendor `sec_e-pen.idc` is only `touch.orientationAware = 1`. A fuller idc can im
 
 Gone with Samsung: Air Command, screen-off memo, Samsung Notes, handwriting keyboard.
 
+### Hover pointer (blue circle)
+
+Hovering the S-Pen close to the glass shows a small **cyan ring** slightly below the nib. It vanishes as soon as the tip touches and writing starts. Noteshelf is not drawing it.
+
+This ROM treats hover as a pointer and Awesometic replaced the usual mouse arrow with a 30×30 cyan donut:
+
+| | |
+|---|---|
+| Overlay | [gts3l-common `pointer_arrow.png`](https://github.com/awesometic/android_device_samsung_gts3l-common/blob/lineage-18.1/overlay/frameworks/base/core/res/res/drawable-xhdpi/pointer_arrow.png) (xhdpi, 30×30 RGBA) |
+| Hotspot | `pointer_arrow_icon.xml`: `hotSpotX/Y = 8.0dip` |
+| Changelog | 2021-07-04 “Added new pointer arrow icon for S-Pen”; 2021-08-13 “Change the hotspot location of the pointer arrow” |
+| Digitizer IDC | `/vendor/usr/idc/sec_e-pen.idc` (stub: `touch.orientationAware = 1`) |
+
+On stock Pie this was Samsung **Air view** (Settings → Advanced features → S Pen). Lineage has no Air view. Android 11 also has no later AOSP toggle (`Settings → Stylus → Show pointer while hovering` / `stylus_pointer_icon_enabled` is Android 14+).
+
+The ring sitting a bit below the physical tip is the overlay hotspot vs the angled nib, not a broken digitizer.
+
+**Left as-is on this install.** If it gets distracting later, hide it over ADB (ROM is `userdebug`, no Magisk). Do not Magisk just for this.
+
+1. Confirm extra dots are off (these are *not* the cyan ring, but they stack on top of it):
+
+   Settings → System → Developer options → **Show taps** and **Pointer location** → off
+
+   ```bash
+   adb shell settings get system show_touches      # want 0 or null
+   adb shell settings get system pointer_location  # want 0 or null
+   ```
+
+2. Preferred: classify the pen as a touchscreen so hover no longer uses `pointer_arrow`. USB mouse cursor stays. Needs reboot:
+
+   ```bash
+   adb root
+   adb remount
+   adb pull /vendor/usr/idc/sec_e-pen.idc /tmp/sec_e-pen.idc.bak
+   # write a new idc, then:
+   adb push sec_e-pen.idc /vendor/usr/idc/sec_e-pen.idc
+   adb shell chmod 644 /vendor/usr/idc/sec_e-pen.idc
+   adb reboot
+   ```
+
+   Example `sec_e-pen.idc` (also the usual pressure-calibration tweak):
+
+   ```
+   touch.deviceType = touchScreen
+   touch.orientationAware = 1
+   touch.pressure.calibration = physical
+   touch.pressure.scale = 0.000244
+   touch.size.calibration = none
+   ```
+
+   AOSP 11 only honors `touchScreen` / `touchPad` / `pointer` / `default` for `touch.deviceType`. The value `stylus` seen in some XDA posts is ignored.
+
+3. Fallback if the ring is still there: replace `pointer_arrow.png` with a fully transparent 30×30 PNG of the same name (same hotspot). That also hides an OTG mouse cursor. The PNG is baked into the device overlay / `framework-res` at build time, so this is a remount + overlay/apk edit, not a Settings toggle.
+
+Hover events and Noteshelf pressure keep working either way; only the on-screen mark goes away. To undo, restore the backed-up idc (or the original PNG) and reboot.
+
 ---
 
 ## Backdrops sideload
@@ -247,6 +303,7 @@ Power off, then **Volume Up + Home + Power** until TWRP.
 
 - Did not flash newer Lineage 19/20/21 (feature loss vs 18.1)
 - Did not Magisk/root
+- Did not hide the S-Pen hover ring (cyan `pointer_arrow` overlay); see above if that should change
 - Did not encrypt userdata
 - Did not rebuild 18.1 for a newer ASB (possible later; Linux 3.18 trees)
 - Did not fix SELinux enforcing
