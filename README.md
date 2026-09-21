@@ -208,6 +208,22 @@ Optional: turn USB debugging off when the PC is not needed; encrypt via Settings
 
 ---
 
+## Why it feels faster than stock Pie
+
+Same hardware: Snapdragon 820, Adreno 530, 4 GB RAM, 9.7″ 2048×1536 **60 Hz**. No CPU upgrade and no higher refresh rate. Stock Pie was starving the tablet; 18.1 is not. After this install, Brave opens and paints pages quickly, and Noteshelf ink lands smoothly.
+
+**Samsung software was the tax.** Last official firmware was One UI–era Pie (`T820XXU3CTD5`, March 2020). Knox, Samsung account, Device Care, Air View, S Pen services, and a pile of always-on daemons sat on 4 GB of RAM. Apps got killed, launches were cold, scrolling hitching was normal. Lineage is nearly stock AOSP: almost none of that is running, so Brave and Noteshelf stay in memory instead of reloading.
+
+**The kernel is newer in the ways that matter for “snappy.”** Awesometic’s tree is tagged **EAS** (Energy Aware Scheduling): WALT, schedutil, SchedTune, ZRAM+LZ4 (2 GB on this 4 GB device), BFQ, AdrenoBoost, `CONFIG_HZ=300`. Stock used older HMP-style scheduling. EAS is better at “user just touched the screen, give the big cores to this app now.” XDA reports on this same ROM were already “much faster than even tweaked stock.”
+
+**Android 11’s app/runtime stack is two generations ahead of Pie.** ART, HWUI/Skia, the input/vsync path, and Chromium/WebView all improved in 10 and 11. Brave on 11 is a current browser engine. On Pie you were on an old WebView and a bloated Samsung Internet/Chrome. Same GPU, much less software in the way.
+
+**Storage is lighter.** Stock used full-disk encryption. This install was left **unencrypted**, so notebook files and Brave cache hit the eMMC without an extra crypto pass. That shows up as faster app start and less hitch when ink or a page commits.
+
+**S-Pen ink is a shorter path.** On Samsung, hover/Air View, the S Pen framework, and app SDKs sat between the digitizer and the page. On this ROM the panel’s Wacom EMR node (`sec_e-pen`, pressure 0–4095, hover, tilt) goes kernel → Android InputReader → Noteshelf’s normal stylus API. Palm rejection is in the kernel (since 2021-07-14), not a Samsung service. Fewer layers, less jitter, strokes land closer to display vsync. Noteshelf 3 on Android 11 can also use newer batched motion events than Noteshelf 2 could on Pie.
+
+---
+
 ## S-Pen and Noteshelf
 
 The Tab S3 S-Pen is Wacom EMR in the panel (no Bluetooth). Lineage 18.1 exposes `sec_e-pen` with pressure 0–4095, hover, tilt, `BTN_STYLUS`. Palm rejection is in the kernel.
