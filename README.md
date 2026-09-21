@@ -220,9 +220,9 @@ Gone with Samsung: Air Command, screen-off memo, Samsung Notes, handwriting keyb
 
 ### S-Pen pointer (blue circle)
 
-A small **cyan ring** follows the S-Pen the whole time it is in range: hovering over the glass **and** while the tip is down writing. It is not Noteshelf-only, and it does not hide on contact.
+A small **cyan ring** follows the S-Pen the whole time it is in range: hovering over the glass **and** while the tip is down writing. It is system-wide — home screen, empty wallpaper, Settings, Noteshelf, any app — not something Noteshelf (or any other app) draws. It does not hide on contact.
 
-This ROM is driving the system pointer from the digitizer. Awesometic replaced the usual mouse arrow with a 30×30 cyan donut, so the same cursor stays on screen from hover through the stroke:
+This ROM is driving the system pointer from the digitizer. Awesometic replaced the usual mouse arrow with a 30×30 cyan donut, so the same cursor stays on screen from hover through the stroke, everywhere:
 
 | | |
 |---|---|
@@ -303,7 +303,7 @@ Power off, then **Volume Up + Home + Power** until TWRP.
 
 - Did not flash newer Lineage 19/20/21 (feature loss vs 18.1)
 - Did not Magisk/root
-- Did not hide the S-Pen pointer ring (cyan `pointer_arrow` overlay; stays during hover and writing); see above if that should change
+- Did not hide the S-Pen pointer ring (cyan `pointer_arrow` overlay; system-wide, hover and writing); see above if that should change
 - Did not encrypt userdata
 - Did not rebuild 18.1 for a newer ASB (possible later; Linux 3.18 trees)
 - Did not fix SELinux enforcing
