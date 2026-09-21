@@ -218,11 +218,11 @@ Vendor `sec_e-pen.idc` is only `touch.orientationAware = 1`. A fuller idc can im
 
 Gone with Samsung: Air Command, screen-off memo, Samsung Notes, handwriting keyboard.
 
-### Hover pointer (blue circle)
+### S-Pen pointer (blue circle)
 
-Hovering the S-Pen close to the glass shows a small **cyan ring** slightly below the nib. It vanishes as soon as the tip touches and writing starts. Noteshelf is not drawing it.
+A small **cyan ring** follows the S-Pen the whole time it is in range: hovering over the glass **and** while the tip is down writing. It is not Noteshelf-only, and it does not hide on contact.
 
-This ROM treats hover as a pointer and Awesometic replaced the usual mouse arrow with a 30×30 cyan donut:
+This ROM is driving the system pointer from the digitizer. Awesometic replaced the usual mouse arrow with a 30×30 cyan donut, so the same cursor stays on screen from hover through the stroke:
 
 | | |
 |---|---|
@@ -246,7 +246,7 @@ The ring sitting a bit below the physical tip is the overlay hotspot vs the angl
    adb shell settings get system pointer_location  # want 0 or null
    ```
 
-2. Preferred: classify the pen as a touchscreen so hover no longer uses `pointer_arrow`. USB mouse cursor stays. Needs reboot:
+2. Preferred: classify the pen as a touchscreen so it no longer uses `pointer_arrow` for hover or contact. USB mouse cursor stays. Needs reboot:
 
    ```bash
    adb root
@@ -303,7 +303,7 @@ Power off, then **Volume Up + Home + Power** until TWRP.
 
 - Did not flash newer Lineage 19/20/21 (feature loss vs 18.1)
 - Did not Magisk/root
-- Did not hide the S-Pen hover ring (cyan `pointer_arrow` overlay); see above if that should change
+- Did not hide the S-Pen pointer ring (cyan `pointer_arrow` overlay; stays during hover and writing); see above if that should change
 - Did not encrypt userdata
 - Did not rebuild 18.1 for a newer ASB (possible later; Linux 3.18 trees)
 - Did not fix SELinux enforcing
