@@ -235,42 +235,46 @@ On stock Pie this was Samsung **Air view** (Settings → Advanced features → S
 
 The ring sitting a bit below the physical tip is the overlay hotspot vs the angled nib, not a broken digitizer.
 
-**Left as-is on this install.** If it gets distracting later, hide it over ADB (ROM is `userdebug`, no Magisk). Do not Magisk just for this.
+**This install (2026-09-20):** confirmed `sec_e-pen` is `Touch Input Mapper (mode - pointer)` / `DeviceType: pointer` with Show taps already off. The ring was too loud while writing, so `res/drawable-xhdpi-v4/pointer_arrow.png` inside `/system/framework/framework-res.apk` was replaced with a thinner ~40% alpha cyan donut (same 30×30, hotspot unchanged). Original APK + PNG are on the tablet at `/sdcard/spen-pointer-backup/` and on the PC at `~/Downloads/lineage-gts3lwifi/spen-pointer-backup/`.
 
-1. Confirm extra dots are off (these are *not* the cyan ring, but they stack on top of it):
+Needs `adb root` (Developer options → **Rooted debugging**), remount, then reboot. Do not Magisk just for this.
 
-   Settings → System → Developer options → **Show taps** and **Pointer location** → off
+To restore the original loud ring:
 
-   ```bash
-   adb shell settings get system show_touches      # want 0 or null
-   adb shell settings get system pointer_location  # want 0 or null
-   ```
+```bash
+adb root
+adb remount
+adb push /sdcard/spen-pointer-backup/framework-res.apk /system/framework/framework-res.apk
+adb shell chmod 644 /system/framework/framework-res.apk
+adb shell chcon u:object_r:system_file:s0 /system/framework/framework-res.apk
+adb reboot
+```
 
-2. Preferred: classify the pen as a touchscreen so it no longer uses `pointer_arrow` for hover or contact. USB mouse cursor stays. Needs reboot:
+To hide it entirely later, classify the pen as a touchscreen so it no longer uses `pointer_arrow` for hover or contact. USB mouse cursor stays. Needs reboot:
 
-   ```bash
-   adb root
-   adb remount
-   adb pull /vendor/usr/idc/sec_e-pen.idc /tmp/sec_e-pen.idc.bak
-   # write a new idc, then:
-   adb push sec_e-pen.idc /vendor/usr/idc/sec_e-pen.idc
-   adb shell chmod 644 /vendor/usr/idc/sec_e-pen.idc
-   adb reboot
-   ```
+```bash
+adb root
+adb remount
+adb pull /vendor/usr/idc/sec_e-pen.idc /tmp/sec_e-pen.idc.bak
+# write a new idc, then:
+adb push sec_e-pen.idc /vendor/usr/idc/sec_e-pen.idc
+adb shell chmod 644 /vendor/usr/idc/sec_e-pen.idc
+adb reboot
+```
 
-   Example `sec_e-pen.idc` (also the usual pressure-calibration tweak):
+Example `sec_e-pen.idc` (also the usual pressure-calibration tweak):
 
-   ```
-   touch.deviceType = touchScreen
-   touch.orientationAware = 1
-   touch.pressure.calibration = physical
-   touch.pressure.scale = 0.000244
-   touch.size.calibration = none
-   ```
+```
+touch.deviceType = touchScreen
+touch.orientationAware = 1
+touch.pressure.calibration = physical
+touch.pressure.scale = 0.000244
+touch.size.calibration = none
+```
 
-   AOSP 11 only honors `touchScreen` / `touchPad` / `pointer` / `default` for `touch.deviceType`. The value `stylus` seen in some XDA posts is ignored.
+AOSP 11 only honors `touchScreen` / `touchPad` / `pointer` / `default` for `touch.deviceType`. The value `stylus` seen in some XDA posts is ignored.
 
-3. Fallback if the ring is still there: replace `pointer_arrow.png` with a fully transparent 30×30 PNG of the same name (same hotspot). That also hides an OTG mouse cursor. The PNG is baked into the device overlay / `framework-res` at build time, so this is a remount + overlay/apk edit, not a Settings toggle.
+Fallback: replace `pointer_arrow.png` with a fully transparent 30×30 PNG of the same name (same hotspot). That also hides an OTG mouse cursor. On this build the PNG lives at `res/drawable-xhdpi-v4/pointer_arrow.png` inside `/system/framework/framework-res.apk`.
 
 Hover events and Noteshelf pressure keep working either way; only the on-screen mark goes away. To undo, restore the backed-up idc (or the original PNG) and reboot.
 
@@ -303,7 +307,7 @@ Power off, then **Volume Up + Home + Power** until TWRP.
 
 - Did not flash newer Lineage 19/20/21 (feature loss vs 18.1)
 - Did not Magisk/root
-- Did not hide the S-Pen pointer ring (cyan `pointer_arrow` overlay; system-wide, hover and writing); see above if that should change
+- Did not hide the S-Pen pointer ring entirely; swapped it for a thinner/fainter donut in `framework-res.apk` (original backed up)
 - Did not encrypt userdata
 - Did not rebuild 18.1 for a newer ASB (possible later; Linux 3.18 trees)
 - Did not fix SELinux enforcing
