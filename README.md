@@ -235,7 +235,7 @@ On stock Pie this was Samsung **Air view** (Settings → Advanced features → S
 
 The ring sitting a bit below the physical tip is the overlay hotspot vs the angled nib, not a broken digitizer.
 
-**This install (2026-09-20):** confirmed `sec_e-pen` is `Touch Input Mapper (mode - pointer)` / `DeviceType: pointer` with Show taps already off. The ring was too loud while writing, so `res/drawable-xhdpi-v4/pointer_arrow.png` inside `/system/framework/framework-res.apk` was replaced with a thinner ~40% alpha cyan donut (same 30×30, hotspot unchanged). Original APK + PNG are on the tablet at `/sdcard/spen-pointer-backup/` and on the PC at `~/Downloads/lineage-gts3lwifi/spen-pointer-backup/`.
+**This install (2026-09-20):** confirmed `sec_e-pen` is `Touch Input Mapper (mode - pointer)` / `DeviceType: pointer` with Show taps already off. The stock donut was too loud while writing, so `res/drawable-xhdpi-v4/pointer_arrow.png` inside `/system/framework/framework-res.apk` was replaced with a thinner ~40% alpha cyan donut (same 30×30, hotspot unchanged). **Kept:** still a useful “where will the pen land” hover helper; once ink is down it reads much fainter against the darker stroke. Original APK + PNG are on the tablet at `/sdcard/spen-pointer-backup/` and on the PC at `~/Downloads/lineage-gts3lwifi/spen-pointer-backup/`.
 
 Needs `adb root` (Developer options → **Rooted debugging**), remount, then reboot. Do not Magisk just for this.
 
